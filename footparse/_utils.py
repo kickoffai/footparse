@@ -16,3 +16,10 @@ class BasePage:
     def from_url(cls, url):
         res = requests.get(url)
         return cls(res.text)
+
+
+def int_or_none(blob):
+    try:
+        return int(blob)
+    except ValueError:
+        return None
