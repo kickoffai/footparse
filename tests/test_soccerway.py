@@ -148,7 +148,7 @@ def test_matchpage_substitutes():
 
 def test_matchpage_coaches():
     truth = {
-        'team1': {'display_name': 'J. Löw', 'swid': 33477},
+        'team1': {'display_name': 'J. L\u00F6w', 'swid': 33477},
         'team2': {'display_name': 'A. Conte', 'swid': 105100},
     }
     path = data_path('soccerway_match.html')
@@ -160,3 +160,92 @@ def test_matchpage_swid():
     path = data_path('soccerway_match.html')
     page = soccerway.MatchPage.from_file(path)
     assert page.swid == 2024887
+
+
+def test_seasonpage_rounds():
+    truth = [
+        {'name': 'Final', 'swid': 13557},
+        {'name': 'Semi-finals', 'swid': 13556},
+        {'name': 'Quarter-finals', 'swid': 13555},
+        {'name': 'Group Stage', 'swid': 13552}
+    ] 
+    path = data_path('soccerway_season_euro12.html')
+    page = soccerway.SeasonPage.from_file(path)
+    rounds = list(page.rounds)
+    assert rounds == truth
+
+
+def test_seasonpage_no_rounds():
+    path = data_path('soccerway_season_superlig.html')
+    page = soccerway.SeasonPage.from_file(path)
+    rounds = list(page.rounds)
+    assert rounds == list()
+
+
+def test_seasonpage_seasons():
+    euro08 = {'swid': 1532, 'name': '2008 Austria/Switzerland'}
+    path = data_path('soccerway_season_euro12.html')
+    page = soccerway.SeasonPage.from_file(path)
+    seasons = list(page.seasons)
+    assert len(seasons) == 16
+    assert seasons[3] == euro08
+
+
+def test_seasonpage_matches():
+    match_past = {
+        'swid': 2291182,
+        'timestamp': 1474799400,
+        'team1': {
+            'swid': 2235,
+            'name': 'Kayserispor',
+            'goals': 2,
+        },
+        'team2': {
+            'swid': 2224,
+            'name': 'Rizespor',
+            'goals': 1,
+        },
+    }
+    match_future = {
+        'swid': 2291192,
+        'timestamp': 1475337600,
+        'team1': {
+            'swid': 2216,
+            'name': 'Gaziantepspor',
+        },
+        'team2': {
+            'swid': 2227,
+            'name': 'Bursaspor',
+        },
+    }
+    path = data_path('soccerway_season_superlig.html')
+    page = soccerway.SeasonPage.from_file(path)
+    matches = list(page.matches)
+    assert matches[0] == match_past
+    assert matches[-1] == match_future
+
+
+def test_seasonpage_swid_euro():
+    path = data_path('soccerway_season_euro12.html')
+    page = soccerway.SeasonPage.from_file(path)
+    assert page.swid == 4943
+
+
+def test_seasonpage_swid_superlig():
+    path = data_path('soccerway_season_superlig.html')
+    page = soccerway.SeasonPage.from_file(path)
+    assert page.swid == 12658
+
+
+def test_roundpage_swid():
+    path = data_path('soccerway_round.html')
+    page = soccerway.RoundPage.from_file(path)
+    assert page.swid == 6910
+
+
+def test_seasonpage_paginated_urls():
+    gen = soccerway.SeasonPage.paginated_urls(12658)
+    assert next(gen) == ("http://www.soccerway.mobi/?page=season&id=12658"
+                         "&params={%22p%22%3A-1}")
+    assert next(gen) == ("http://www.soccerway.mobi/?page=season&id=12658"
+                         "&params={%22p%22%3A-2}")

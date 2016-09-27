@@ -2,8 +2,20 @@
 
 Note: on soccerway, a competition is divided in multiple phases, which
 itself contains multiple games.
+
+TODO Explain the following types of pages:
+
+- person
+- player (needless - person is more refined)
+- team
+- match
+- competition (needless - season is more refined)
+- season
+- round
+- group (needless - just a filter on `round`)
 """
 
+import itertools
 import re
 
 from datetime import datetime
@@ -233,5 +245,90 @@ class TeamPage(SoccerwayPage):
         return str(attr)
 
 
-class CompetitionPage(SoccerwayPage):
-    pass
+class MatchListPage(SoccerwayPage):
+
+    def __init__(self, data):
+        data = data.replace('&nbsp;', " ")
+        self.tree = etree.HTML(data)
+        super().__init__(data)
+
+    @property
+    def rounds(self):
+        for option in self.tree.xpath('//select[@name="round_id"]/option'):
+            match = re.match(r'.*page=round&id=(?P<swid>\d+).+',
+                             option.get("value"))
+            yield {
+                'name': option.text,
+                'swid': int(match.group('swid')),
+            }
+
+    @property
+    def seasons(self):
+        for option in self.tree.xpath('//select[@name="season_id"]/option'):
+            match = re.match(r'.*page=season&id=(?P<swid>\d+).+',
+                             option.get("value"))
+            yield {
+                'name': option.text,
+                'swid': int(match.group('swid')),
+            }
+
+    @property
+    def matches(self):
+        for tr in self.tree.xpath('//table[contains(@class, "matches")]'
+                                  '/tbody/tr'):
+            match_info = dict()
+            # Get the timestamp.
+            elem = tr.xpath('./td/span/span[@class="timestamp"]')[0]
+            match_info['timestamp'] = int(elem.get("data-value"))
+            # Get the Soccerway ID.
+            elem = tr.xpath('./td[contains(@class, "score")]/a')[0]
+            match = re.match(r'.*page=match&id=(?P<swid>\d+).+',
+                             elem.get("href"))
+            match_info['swid'] = int(match.group('swid'))
+            # Try to get the score.
+            elems = tr.xpath('./td//span[@class="scoring"]')
+            if len(elems) > 0:
+                scores = list(map(int, elems[0].text.split(" - ")))
+            else:
+                scores = None
+            # Process each team.
+            for i, cls in ((1, "team-a"), (2, "team-b")):
+                elem = tr.xpath('./td[contains(@class, "{}")]/a'.format(cls))[0]
+                match = re.match(r'.*page=team&id=(?P<swid>\d+).+',
+                                 elem.get("href"))
+                match_info['team{}'.format(i)] = {
+                    'name': elem.text.strip(),
+                    'swid': int(match.group('swid')),
+                }
+                if scores is not None:
+                    match_info['team{}'.format(i)]['goals'] = scores[i-1]
+            yield match_info
+
+    @classmethod
+    def paginated_urls(cls, swid):
+        # TODO Documentation.
+        template = cls.URL_TEMPLATE + "&params={{%22p%22%3A{}}}"
+        for i in itertools.count(-1, -1):
+            yield template.format(i, swid=swid)
+
+
+class SeasonPage(MatchListPage):
+
+    URL_TEMPLATE = "http://www.soccerway.mobi/?page=season&id={swid}"
+
+    @property
+    def swid(self):
+        attr = self.tree.xpath('//select[@name="season_id"]'
+                               '/option[@selected]/@value')[0]
+        match = re.match(r'.*page=season&id=(?P<swid>\d+).+', attr)
+        return int(match.group('swid'))
+
+
+class RoundPage(MatchListPage):
+
+    URL_TEMPLATE = "http://www.soccerway.mobi/?page=round&id={swid}"
+
+    @property
+    def swid(self):
+        elem = self.tree.xpath('//div[@data-round_id]')[0]
+        return int(elem.get("data-round_id"))
