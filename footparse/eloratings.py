@@ -11,22 +11,22 @@ class TeamPage(BasePage):
 
     def __init__(self, data):
         # Getting rid of annoying non-breaking spaces.
-        data = data.replace(r'&nbsp;', " ")
+        data = data.replace('&nbsp;', " ")
         self.tree = etree.HTML(data)
         super().__init__(data)
 
     @property
     def country(self):
-        elem = self.tree.xpath(r'//h1')[0]
+        elem = self.tree.xpath('//h1')[0]
         match = re.match(r'World Football Elo Ratings: (?P<country>.+)',
                          elem.text)
         return match.group('country')
 
     @property
     def entries(self):
-        get_texts = etree.XPath(r'./text()')
-        for row in self.tree.xpath(r'//table[@class="results"]'
-                                   r'/tr[@class="nh"]'):
+        get_texts = etree.XPath('./text()')
+        for row in self.tree.xpath('//table[@class="results"]'
+                                   '/tr[@class="nh"]'):
             dt_str = " ".join(get_texts(row[0]))
             dt = datetime.strptime(dt_str, "%B %d %Y").date()
             names = list(map(str, get_texts(row[1])))
@@ -36,12 +36,12 @@ class TeamPage(BasePage):
             ratings = list(map(int_or_none, get_texts(row[5])))
             rank_diffs = list(map(int_or_none, get_texts(row[6])))
             ranks = list(map(int_or_none, get_texts(row[7])))
-            attr = {
+            match_info = {
                 'date': dt,
                 'competition': competition,
             }
             for i, key in enumerate(('team1', 'team2')):
-                attr[key] = {
+                match_info[key] = {
                     'name': names[i],
                     'goals': score[i],
                     'rating_diff': rating_diffs[i],
@@ -49,7 +49,7 @@ class TeamPage(BasePage):
                     'rank_diff': rank_diffs[i],
                     'rank': ranks[i]
                 }
-            yield attr
+            yield match_info
 
     @classmethod
     def from_name(cls, name):
@@ -72,13 +72,13 @@ class HomePage(BasePage):
                     'goals_for', 'goals_against']
 
     def __init__(self, data):
-        data = data.replace(r'&nbsp;', " ")
+        data = data.replace('&nbsp;', " ")
         self.tree = etree.HTML(data)
         super().__init__(data)
 
     @property
     def date(self):
-        elem = self.tree.xpath(r'//td[@class="mh"][@colspan="16"]')[0]
+        elem = self.tree.xpath('//td[@class="mh"][@colspan="16"]')[0]
         match = re.match(r'Ratings and Statistics as of (?P<date>.+)',
                          elem.text)
         dt = datetime.strptime(match.group('date'), "%A %B %d %Y")
@@ -86,17 +86,17 @@ class HomePage(BasePage):
 
     @property
     def ratings(self):
-        for row in self.tree.xpath(r'//table[@rules="groups"][not(@class)]'
-                                   r'/tr[not(@class)]'):
-            attr = dict()
+        for row in self.tree.xpath('//table[@rules="groups"][not(@class)]'
+                                   '/tr[not(@class)]'):
+            country_info = dict()
             for key, cell in zip(HomePage.RATINGS_KEYS, row.iter('td')):
                 if key == 'team':
                     val = cell[0].text
-                    attr['href'] = cell[0].get('href')
+                    country_info['href'] = cell[0].get('href')
                 else:
                     val = int_or_none(cell.text)
-                attr[key] = val
-            yield attr
+                country_info[key] = val
+            yield country_info
 
     @classmethod
     def load(cls):
