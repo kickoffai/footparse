@@ -6,16 +6,19 @@ class HomePage(BasePage):
 
     URL = "http://www.fifa.com/fifa-world-ranking/ranking-table/men/"
 
+    def __init__(self, data):
+        data = data.replace(r'&nbsp;', " ")
+        self.tree = etree.HTML(data)
+        super().__init__(data)
+
     @property
     def date(self):
-        html = etree.HTML(self.data)
-        ranking_date = html.xpath('//*[@id="content-wrap"]/div/div[2]/div/div[2]/div/div[1]/div[2]/ul/li')[0].text
+        ranking_date = self.tree.xpath('//*[@id="content-wrap"]/div/div[2]/div/div[2]/div/div[1]/div[2]/ul/li')[0].text
         return datetime.strptime(ranking_date, "%d %B %Y").date()
 
     @property
     def ratings(self):
-        html = etree.HTML(self.data)
-        teams = html.xpath('//table[contains(@class, "tbl-ranking")]/tbody/tr')
+        teams = self.tree.xpath('//table[contains(@class, "tbl-ranking")]/tbody/tr')
 
         for row in teams:
             team = {
