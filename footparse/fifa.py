@@ -2,7 +2,7 @@ from ._utils import BasePage
 from lxml import etree
 from datetime import datetime
 
-class HomePage(BasePage):
+class RankingPage(BasePage):
 
     URL = "http://www.fifa.com/fifa-world-ranking/ranking-table/men/"
 
