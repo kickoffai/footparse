@@ -23,3 +23,10 @@ def int_or_none(blob):
         return int(blob)
     except ValueError:
         return None
+
+
+def float_or_none(blob):
+    try:
+        return float(blob)
+    except TypeError:
+        return None
