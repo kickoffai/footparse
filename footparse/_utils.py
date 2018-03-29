@@ -15,6 +15,7 @@ class BasePage:
     @classmethod
     def from_url(cls, url):
         res = requests.get(url)
+        res.raise_for_status()
         return cls(res.text)
 
 
