@@ -1,8 +1,11 @@
+import pytest
+
 from footparse.betexplorer import CompetitionPage, MatchPage, OddsPage
 from testutils import data_path
 from datetime import date
 
 
+@pytest.mark.skip(reason="BetExplorer layout has changed")
 def test_competitionpage_matches():
     # It should retrieve the list of all the match ids
     path = data_path('betexplorer_euro_2016.html')
@@ -12,6 +15,7 @@ def test_competitionpage_matches():
     assert len(matches) == 319
 
 
+@pytest.mark.skip(reason="BetExplorer layout has changed")
 def test_matchpage_odds():
     # It should retrieve the odds for Switzerland - France during the Euro 2016
     # Match ID: UB0TAndB
