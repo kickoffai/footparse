@@ -22,8 +22,9 @@ setup(name='footparse',
       packages=['footparse'],
       install_requires=[
           'requests',
+          'lxml',
       ],
-      test_suite='nose.collector',
-      tests_require=['nose'],
+      setup_requires=['pytest-runner'],
+      tests_require=['pytest'],
       include_package_data=True,
       zip_safe=False)
