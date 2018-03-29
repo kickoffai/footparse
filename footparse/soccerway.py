@@ -148,7 +148,6 @@ class MatchPage(SoccerwayPage):
                                       '/ul/li'.format(cls)):
                 attr = self._parse_player_item(li)
                 substitutes['team{}'.format(i)].append(attr)
-        print(substitutes)
         return substitutes
 
     @property
@@ -278,8 +277,7 @@ class MatchListPage(SoccerwayPage):
                                   '/tbody/tr'):
             match_info = dict()
             # Get the timestamp.
-            elem = tr.xpath('./td/span/span[@class="timestamp"]')[0]
-            match_info['timestamp'] = int(elem.get("data-value"))
+            match_info['timestamp'] = int(tr.get("data-timestamp"))
             # Get the Soccerway ID.
             elem = tr.xpath('./td[contains(@class, "score")]/a')[0]
             match = re.match(r'.*page=match&id=(?P<swid>\d+).+',

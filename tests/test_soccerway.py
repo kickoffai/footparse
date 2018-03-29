@@ -243,6 +243,13 @@ def test_roundpage_swid():
     assert page.swid == 6910
 
 
+def test_roundpage_matches():
+    # Timestamp is not part of <span class="timestamp"> element.
+    path = data_path('soccerway_round2.html')
+    page = soccerway.RoundPage.from_file(path)
+    list(page.matches)
+
+
 def test_seasonpage_paginated_urls():
     gen = soccerway.SeasonPage.paginated_urls(12658)
     assert next(gen) == ("http://www.soccerway.mobi/?page=season&id=12658"
