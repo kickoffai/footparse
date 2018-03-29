@@ -28,7 +28,13 @@ class TeamPage(BasePage):
         for row in self.tree.xpath('//table[@class="results"]'
                                    '/tr[@class="nh"]'):
             dt_str = " ".join(get_texts(row[0]))
-            dt = datetime.strptime(dt_str, "%B %d %Y").date()
+            try:
+                dt = datetime.strptime(dt_str, "%B %d %Y").date()
+            except:
+                try:
+                    dt = datetime.strptime(dt_str, "%B %Y").date()
+                except:
+                    dt = datetime.strptime(dt_str, "%Y").date()
             names = list(map(str, get_texts(row[1])))
             score = list(map(int, get_texts(row[2])))
             competition = " ".join(get_texts(row[3]))

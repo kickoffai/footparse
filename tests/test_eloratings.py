@@ -68,3 +68,12 @@ def test_teampage_entries():
     entries = list(page.entries)
     assert len(entries) == 919
     assert entries[372] == truth
+
+
+def test_teampage_weird_dates():
+    """Dates do not always contain the day or even the month."""
+    path = data_path('eloratings_antigua.html')
+    page = eloratings.TeamPage.from_file(path)
+    entries = list(page.entries)
+    assert entries[25]["date"] == date(1984, 1, 1)
+    assert entries[31]["date"] == date(1986, 6, 1)
