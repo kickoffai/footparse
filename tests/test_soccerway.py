@@ -254,6 +254,15 @@ def test_roundpage_matches():
     list(page.matches)
 
 
+def test_matchlistpage_is_last():
+    path = data_path('soccerway_season_euro12.html')
+    page = soccerway.SeasonPage.from_file(path)
+    assert page.is_last
+    path = data_path('soccerway_season_superlig.html')
+    page = soccerway.SeasonPage.from_file(path)
+    assert not page.is_last
+
+
 def test_seasonpage_paginated_urls():
     gen = soccerway.SeasonPage.paginated_urls(12658)
     assert next(gen) == ("http://www.soccerway.mobi/?page=season&id=12658"

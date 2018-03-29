@@ -302,6 +302,13 @@ class MatchListPage(SoccerwayPage):
                     match_info['team{}'.format(i)]['goals'] = scores[i-1]
             yield match_info
 
+    @property
+    def is_last(self):
+        """Returns true if page is at end of pagination."""
+        elems = self.tree.xpath('//div[contains(@class, "match-pagination")]'
+                                '/span/a[contains(@class, "previous")]')
+        return len(elems) == 0 or "disabled" in elems[0].get("class")
+
     @classmethod
     def paginated_urls(cls, swid):
         # TODO Documentation.
