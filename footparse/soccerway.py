@@ -274,7 +274,7 @@ class MatchListPage(SoccerwayPage):
     @property
     def matches(self):
         for tr in self.tree.xpath('//table[contains(@class, "matches")]'
-                                  '/tbody/tr'):
+                                  '/tbody/tr[contains(@class, "match")]'):
             match_info = dict()
             # Get the timestamp.
             match_info['timestamp'] = int(tr.get("data-timestamp"))

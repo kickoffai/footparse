@@ -248,6 +248,10 @@ def test_roundpage_matches():
     path = data_path('soccerway_round2.html')
     page = soccerway.RoundPage.from_file(path)
     list(page.matches)
+    # Some rows in the matches table contain aggregate results.
+    path = data_path('soccerway_round3.html')
+    page = soccerway.RoundPage.from_file(path)
+    list(page.matches)
 
 
 def test_seasonpage_paginated_urls():
