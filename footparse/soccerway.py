@@ -87,7 +87,7 @@ class MatchPage(SoccerwayPage):
         attr = dict()
         # Shirt number.
         elems = li.xpath('./span/span[@class="shirt-number"]')
-        if len(elems) > 0:
+        if len(elems) > 0 and elems[0].text is not None:
             attr['shirt_number'] = int(elems[0].text)
         # Nationality.
         elems = li.xpath('./span/span[contains(@class,"nationality")]')

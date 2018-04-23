@@ -115,7 +115,6 @@ def test_matchpage_multiple_events():
     ]
     path = data_path('soccerway_match2.html')
     page = soccerway.MatchPage.from_file(path)
-    starters = page.starters
     assert page.starters["team1"][7]["events"] == truth
 
 
@@ -160,6 +159,13 @@ def test_matchpage_swid():
     path = data_path('soccerway_match.html')
     page = soccerway.MatchPage.from_file(path)
     assert page.swid == 2024887
+
+
+def test_matchpage_no_shirt_numbers():
+    """Some pages don't have shirt numbers."""
+    path = data_path('soccerway_match_nonum.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.starters is not None
 
 
 def test_seasonpage_rounds():
