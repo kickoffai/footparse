@@ -204,6 +204,14 @@ def test_matchpage_no_kickoff_time():
     assert page.info["timestamp"] == 677023200
 
 
+def test_matchpage_x():
+    """Sometimes the time of substitutions is not indicated."""
+    path = data_path('soccerway_match_subst.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.starters["team1"][8]["subst_out"] == -1
+    assert page.substitutes["team1"][0]["subst_in"] == -1
+
+
 def test_seasonpage_rounds():
     truth = [
         {'name': 'Final', 'swid': 13557},

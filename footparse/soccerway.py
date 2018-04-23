@@ -113,14 +113,16 @@ class MatchPage(SoccerwayPage):
         if len(elems) > 0:
             match = re.match(r'Substitute out - (?P<when>\d+).+',
                              elems[0].get('title'))
-            attr['subst_out'] = int(match.group('when'))
+            attr['subst_out'] = (int(match.group('when'))
+                    if match is not None else -1)
         # Substitute in.
         elems = li.xpath('./span//span[@class="player-events"]'
                          '/span/span[contains(@class,"evt-icon-SI")]')
         if len(elems) > 0:
             match = re.match(r'Substitute in - (?P<when>\d+).+',
                              elems[0].get('title'))
-            attr['subst_in'] = int(match.group('when'))
+            attr['subst_in'] = (int(match.group('when'))
+                    if match is not None else -1)
         # Game events (goals, cards, etc.).
         attr['events'] = list()
         elems = li.xpath('./span/span[@class="match-events"]/span')
