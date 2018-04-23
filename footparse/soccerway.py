@@ -46,6 +46,12 @@ class MatchPage(SoccerwayPage):
         return int(elem.get("data-match_id"))
 
     @property
+    def scoretime(self):
+        elem = self.tree.xpath('//h3[contains(@class,"scoretime")]')[0]
+        text = etree.tostring(elem, method='text').decode().strip()
+        return re.sub(r'\W+', ' ', text)  # Collapse multiple white space.
+
+    @property
     def info(self):
         mapping = { # Maps description string to dict key.
             'Competition': 'competition',

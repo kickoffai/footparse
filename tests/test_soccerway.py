@@ -72,6 +72,17 @@ def test_matchpage_info():
     assert page.info == truth
 
 
+def test_matchpage_scoretime():
+    data = (
+        ('soccerway_match.html', 'P 1 1 P'),
+        ('soccerway_match_nonum.html', '3 0'),
+        ('soccerway_match2.html', '3 1'),
+    )
+    for path, res in data:
+        page = soccerway.MatchPage.from_file(data_path(path))
+        assert page.scoretime == res
+
+
 def test_matchpage_starters():
     oezil = {  # Scored a goal during the game.
         'display_name': 'M. \u00D6zil',
