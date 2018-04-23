@@ -167,7 +167,7 @@ class MatchPage(SoccerwayPage):
                 match = re.match(r'.*page=person&id=(?P<swid>\d+)&',
                                  elem.get('href'))
                 coaches['team{}'.format(i)].append({
-                    'display_name': elem.text if elem.text is not None else '',
+                    'display_name': elem.text,
                     'swid': int(match.group('swid'))
                 })
         return coaches
