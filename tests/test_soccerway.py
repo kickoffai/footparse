@@ -179,6 +179,14 @@ def test_matchpage_no_shirt_numbers():
     assert page.starters is not None
 
 
+def test_matchpage_no_minutes():
+    """Sometimes the time of events isn't available."""
+    path = data_path('soccerway_match_nodetails.html')
+    page = soccerway.MatchPage.from_file(path)
+    cichero = page.starters['team1'][6]
+    assert cichero['events'] == [{'type': 'Yellow card'}]
+
+
 def test_seasonpage_rounds():
     truth = [
         {'name': 'Final', 'swid': 13557},

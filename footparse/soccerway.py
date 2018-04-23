@@ -127,11 +127,11 @@ class MatchPage(SoccerwayPage):
         attr['events'] = list()
         elems = li.xpath('./span/span[@class="match-events"]/span')
         for elem in elems:
+            event = {'type': elem[0].get('title')}
             match = re.match(r'(?P<when>\d+).+', elem[1].text)
-            attr['events'].append({
-                'type': elem[0].get('title'),
-                'minute': int(match.group('when')),
-            })
+            if match is not None:
+                event['minute'] = int(match.group('when'))
+            attr['events'].append(event)
         return attr
 
     @property
