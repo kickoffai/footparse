@@ -160,10 +160,12 @@ class MatchPage(SoccerwayPage):
             if len(elems) > 0:
                 match = re.match(r'.*page=person&id=(?P<swid>\d+)&',
                                  elems[0].get('href'))
-                coaches['team{}'.format(i)] = {
+                # Wrap the dict inside a list for consistency with starters &
+                # substitutes.
+                coaches['team{}'.format(i)] = [{
                     'display_name': elems[0].text,
                     'swid': int(match.group('swid'))
-                }
+                }]
         return coaches
 
 

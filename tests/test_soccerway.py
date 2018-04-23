@@ -148,8 +148,8 @@ def test_matchpage_substitutes():
 
 def test_matchpage_coaches():
     truth = {
-        'team1': {'display_name': 'J. L\u00F6w', 'swid': 33477},
-        'team2': {'display_name': 'A. Conte', 'swid': 105100},
+        'team1': [{'display_name': 'J. L\u00F6w', 'swid': 33477}],
+        'team2': [{'display_name': 'A. Conte', 'swid': 105100}],
     }
     path = data_path('soccerway_match.html')
     page = soccerway.MatchPage.from_file(path)
