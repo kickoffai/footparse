@@ -197,6 +197,13 @@ def test_matchpage_many_coaches():
     ]
 
 
+def test_matchpage_no_kickoff_time():
+    """Sometimes there is no kick-off time indicated."""
+    path = data_path('soccerway_match_notime.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.info["timestamp"] == 677023200
+
+
 def test_seasonpage_rounds():
     truth = [
         {'name': 'Final', 'swid': 13557},

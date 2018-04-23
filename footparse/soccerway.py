@@ -56,7 +56,6 @@ class MatchPage(SoccerwayPage):
         mapping = { # Maps description string to dict key.
             'Competition': 'competition',
             'Date': 'date',
-            'Kick-off': 'timestamp',
             'Venue': 'venue',
             'Attendance': 'attendance',
             'Half-time': 'score_ht',
@@ -70,10 +69,9 @@ class MatchPage(SoccerwayPage):
                 key = mapping[elem.text]
                 desc = elem.getnext()
                 if key == 'date':
-                    attr[key] = datetime.strptime(desc[0][0].text,
-                                                  "%d %B %Y").date()
-                elif key == 'timestamp':
-                    attr[key] = int(desc[0].get('data-value'))
+                    span = desc[0][0]
+                    attr[key] = datetime.strptime(span.text, "%d %B %Y").date()
+                    attr["timestamp"] = int(span.get('data-value'))
                 elif key == 'attendance':
                     attr[key] = int(desc.text)
                 elif key.startswith('score_'):
