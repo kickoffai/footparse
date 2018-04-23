@@ -158,20 +158,18 @@ class MatchPage(SoccerwayPage):
 
     @property
     def coaches(self):
-        coaches = dict()
-        for i, cls in ((1, "team-a"), (2, "team-b")):
+        coaches = dict(team1=list(), team2=list())
+        for i, cls in enumerate(("team-a", "team-b"), start=1):
             elems = self.tree.xpath('//div[contains(@class, "{}")]'
                                     '/div[contains(@class, "team-coach")]/span'
                                     '/span[@class="name"]/a'.format(cls))
-            if len(elems) > 0:
+            for elem in elems:
                 match = re.match(r'.*page=person&id=(?P<swid>\d+)&',
-                                 elems[0].get('href'))
-                # Wrap the dict inside a list for consistency with starters &
-                # substitutes.
-                coaches['team{}'.format(i)] = [{
-                    'display_name': elems[0].text,
+                                 elem.get('href'))
+                coaches['team{}'.format(i)].append({
+                    'display_name': elem.text if elem.text is not None else '',
                     'swid': int(match.group('swid'))
-                }]
+                })
         return coaches
 
 

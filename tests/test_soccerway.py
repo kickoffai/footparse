@@ -187,6 +187,16 @@ def test_matchpage_no_minutes():
     assert cichero['events'] == [{'type': 'Yellow card'}]
 
 
+def test_matchpage_many_coaches():
+    """Sometimes there are multiple coaches listed for one team."""
+    path = data_path('soccerway_match_manycoaches.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.coaches["team1"] == [
+        {'display_name': '', 'swid': 207554},
+        {'display_name': 'B. Brnovi\u0107', 'swid': 104866},
+    ]
+
+
 def test_seasonpage_rounds():
     truth = [
         {'name': 'Final', 'swid': 13557},
