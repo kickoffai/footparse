@@ -72,6 +72,16 @@ def test_matchpage_info():
     assert page.info == truth
 
 
+def test_matchpage_competition_swid():
+    data = (
+        ('soccerway_match.html', 25),
+        ('soccerway_match2.html', 90),
+    )
+    for path, cid in data:
+        page = soccerway.MatchPage.from_file(data_path(path))
+        assert page.competition_swid == cid
+
+
 def test_matchpage_scoretime():
     data = (
         ('soccerway_match.html', 'P 1 1 P'),

@@ -52,6 +52,12 @@ class MatchPage(SoccerwayPage):
         return re.sub(r'\W+', ' ', text)  # Collapse multiple white space.
 
     @property
+    def competition_swid(self):
+        elem = self.tree.xpath('//div[@id="navbar"]/ul/li[2]/a[2]')[0]
+        match = re.match(r'.*competition&id=(?P<swid>\d+)&', elem.get('href'))
+        return int(match.group('swid'))
+
+    @property
     def info(self):
         mapping = { # Maps description string to dict key.
             'Competition': 'competition',
