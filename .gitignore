@@ -11,7 +11,7 @@
 
 # Other.
 /.eggs/
-.cache/
+.pytest_cache/
 
 # Coverage information.
 .coverage

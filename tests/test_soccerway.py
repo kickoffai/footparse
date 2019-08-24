@@ -325,7 +325,7 @@ def test_matchlistpage_is_last():
 
 def test_seasonpage_paginated_urls():
     gen = soccerway.SeasonPage.paginated_urls(12658)
-    assert next(gen) == ("http://www.soccerway.mobi/?page=season&id=12658"
+    assert next(gen) == ("http://www.m.soccerway.mobi/?page=season&id=12658"
                          "&params={%22p%22%3A-1}")
-    assert next(gen) == ("http://www.soccerway.mobi/?page=season&id=12658"
+    assert next(gen) == ("http://www.m.soccerway.mobi/?page=season&id=12658"
                          "&params={%22p%22%3A-2}")

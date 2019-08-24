@@ -32,7 +32,7 @@ class SoccerwayPage(BasePage):
 
 class MatchPage(SoccerwayPage):
 
-    URL_TEMPLATE = "http://www.soccerway.mobi/?page=match&id={swid}"
+    URL_TEMPLATE = "http://www.m.soccerway.mobi/?page=match&id={swid}"
 
     def __init__(self, data):
         # Getting rid of annoying non-breaking spaces.
@@ -181,7 +181,7 @@ class MatchPage(SoccerwayPage):
 
 class PersonPage(SoccerwayPage):
 
-    URL_TEMPLATE = "http://www.soccerway.mobi/?page=person&id={swid}"
+    URL_TEMPLATE = "http://www.m.soccerway.mobi/?page=person&id={swid}"
 
     def __init__(self, data):
         # Getting rid of annoying non-breaking spaces.
@@ -230,7 +230,7 @@ class PersonPage(SoccerwayPage):
 
 class TeamPage(SoccerwayPage):
 
-    URL_TEMPLATE = "http://www.soccerway.mobi/?page=team&id={swid}"
+    URL_TEMPLATE = "http://www.m.soccerway.mobi/?page=team&id={swid}"
 
     def __init__(self, data):
         # Getting rid of annoying non-breaking spaces.
@@ -331,7 +331,7 @@ class MatchListPage(SoccerwayPage):
 
 class SeasonPage(MatchListPage):
 
-    URL_TEMPLATE = "http://www.soccerway.mobi/?page=season&id={swid}"
+    URL_TEMPLATE = "http://www.m.soccerway.mobi/?page=season&id={swid}"
 
     @property
     def swid(self):
@@ -343,7 +343,7 @@ class SeasonPage(MatchListPage):
 
 class RoundPage(MatchListPage):
 
-    URL_TEMPLATE = "http://www.soccerway.mobi/?page=round&id={swid}"
+    URL_TEMPLATE = "http://www.m.soccerway.mobi/?page=round&id={swid}"
 
     @property
     def swid(self):
