@@ -227,6 +227,52 @@ def test_matchpage_subst():
     assert page.substitutes["team1"][0]["subst_in"] == -1
 
 
+def test_matchpage_cancelled():
+    """When a match is cancelled, there are no scores."""
+    path = data_path('soccerway_match_cancelled.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.info['date'] == date(2020, 3, 30)
+    assert page.scores == {}
+
+
+def test_matchpage_multicoach():
+    """Some matches list multiples coaches."""
+    coaches = {
+        'team1': [
+            {'display_name': 'Cristian Fiél', 'swid': 1642},
+        ],
+        'team2': [
+            {'display_name': 'B. Schommers', 'swid': 307484},
+            {'display_name': 'D. Canadi', 'swid': 223510},
+        ],
+    }
+    path = data_path('soccerway_match_multicoach.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.coaches == coaches
+    assert len(page.starters['team1']) == 11
+    assert len(page.starters['team2']) == 11
+
+
+def test_matchpage_events():
+    sahin = [
+        {'minute': 76, 'type': 'Yellow card'},
+        {'minute': 90, 'type': 'Yellow 2nd/RC'}
+    ]
+    klaassen = [
+        {'minute': 5, 'type': 'Penalty goal'},
+        {'minute': 55, 'type': 'Penalty missed'},
+    ]
+    fuellkrug = [
+        {'minute': 19, 'type': 'Yellow card'},
+        {'minute': 55, 'type': 'Goal'}
+    ]
+    path = data_path('soccerway_match_events.html')
+    page = soccerway.MatchPage.from_file(path)
+    assert page.starters['team2'][4]['events'] == sahin
+    assert page.starters['team2'][6]['events'] == klaassen
+    assert page.starters['team2'][9]['events'] == fuellkrug
+
+
 def test_seasonpage_rounds():
     truth = [
         {'name': 'Final', 'swid': 31064},
@@ -330,7 +376,7 @@ def test_matchlistpage_is_paginated():
 
 
 def test_matchesblock_info():
-    path = data_path('soccerway_matchesblock1.json')
+    path = data_path('soccerway_block1.json')
     block = soccerway.MatchesBlock.from_file(path)
     assert block.round_swid == 54142
     assert block.page == 0
@@ -339,7 +385,7 @@ def test_matchesblock_info():
 
 
 def test_matchesblock_matches():
-    path = data_path('soccerway_matchesblock1.json')
+    path = data_path('soccerway_block1.json')
     block = soccerway.MatchesBlock.from_file(path)
     matches = list(block.matches)
     assert len(matches) == 10
@@ -360,7 +406,7 @@ def test_matchesblock_matches():
 
 
 def test_matchesblock_empty():
-    path = data_path('soccerway_matchesblock2.json')
+    path = data_path('soccerway_block2.json')
     block = soccerway.MatchesBlock.from_file(path)
     assert block.round_swid == 54138
     assert block.page == 50
@@ -368,3 +414,14 @@ def test_matchesblock_empty():
     assert not block.has_next
     matches = list(block.matches)
     assert len(matches) == 0
+
+
+def test_matchlistpage_round_swid():
+    # Page with the "rounds" dropdown.
+    path = data_path('soccerway_round3.html')
+    page = soccerway.SeasonPage.from_file(path)
+    assert page.round_swid == 40110
+    # Page without the "rounds" dropdown.
+    path = data_path('soccerway_season_superlig.html')
+    page = soccerway.SeasonPage.from_file(path)
+    assert page.round_swid == 36002

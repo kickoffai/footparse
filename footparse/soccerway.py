@@ -74,13 +74,14 @@ class MatchPage(SoccerwayPage):
             attr['team{}_name'.format(i)] = elem.text
             match = re.match(r'.*/(?P<swid>\d+)/', elem.get('href'))
             attr['team{}_swid'.format(i)] = int(match.group('swid'))
-        print(attr)
         return attr
 
     @property
     def scores(self):
-        elem = self.tree.xpath('//h3[contains(@class,"scoretime")]')[0]
-        text = etree.tostring(elem, method='text').decode()
+        elems = self.tree.xpath('//h3[contains(@class,"scoretime")]')
+        if len(elems) == 0:
+            return {}  # No score information (e.g., match cancelled).
+        text = etree.tostring(elems[0], method='text').decode()
         text = text.replace("&nbsp", "")  # Get rid of invalid HTML.
         text = re.sub(r'\s+', ' ', text).strip()  # Collapse multiple white space.
         # Examples:
@@ -89,7 +90,6 @@ class MatchPage(SoccerwayPage):
         #     FT 1 - 1
         #     AET P 1 - 1 P (FT 1 - 1) (PEN 6 - 5)
         #     FT 2 - 1 (HT 1 - 0)
-        print(text)
         match = re.match(
             r'(?P<t1>FT|AET) (?:(?:E|P) )?'  #  Score 1: FT or ET
             r'(?P<s1a>\d+) - (?P<s1b>\d+)(?: (?:E|P))?'  # Actual score 1.
@@ -119,9 +119,6 @@ class MatchPage(SoccerwayPage):
 
     def _parse_player_item(self, tr):
         attr = dict()
-        # Check that it's not a coach.
-        if len(tr.xpath('./td/strong[text()="Coach:"]')) > 0:
-            return None
         # Shirt number.
         elems = tr.xpath('./td[@class="shirtnumber"]')
         if len(elems) > 0 and elems[0].text is not None:
@@ -132,6 +129,9 @@ class MatchPage(SoccerwayPage):
             attr['display_name'] = elems[0].text
             match = re.match(r'.*/(?P<swid>\d+)/', elems[0].get('href'))
             attr['swid'] = int(match.group('swid'))
+        else:
+            # Not a player (maybe a coach, an empty row, ...)
+            return None
         # Substitution.
         elems = tr.xpath(
             './td[contains(@class,"player")]//img[@title="Substituted"]')
@@ -149,6 +149,7 @@ class MatchPage(SoccerwayPage):
             'G': 'Goal',
             'OG': 'Own goal',
             'PG': 'Penalty goal',
+            'PM': 'Penalty missed',
             'YC': 'Yellow card',
             'Y2C': 'Yellow 2nd/RC',
             'RC': 'Red card',
@@ -330,10 +331,18 @@ class MatchListPage(SoccerwayPage):
 
     @property
     def round_swid(self):
-        attr = self.tree.xpath('//select[@name="round_id"]'
-                               '/option[@selected]/@value')[0]
-        match = re.match(r'.*/r(?P<swid>\d+)/', attr)
-        return int(match.group('swid'))
+        elems = self.tree.xpath(
+            '//select[@name="round_id"]/option[@selected]/@value')
+        if len(elems) > 0:
+            # This approach seems more robust.
+            match = re.match(r'.*/r(?P<swid>\d+)/', elems[0])
+            return int(match.group('swid'))
+        else:
+            # Fallback when there is no selected round.
+            elems = self.tree.xpath(
+                '//div[@id="submenu"]/ul/li/a[text()="Summary"]/@href')
+            match = re.match(r'.*/r(?P<swid>\d+)/', elems[0])
+            return int(match.group('swid'))
 
 
 class CompetitionPage(MatchListPage):
