@@ -55,11 +55,11 @@ class MatchPage(SoccerwayPage):
     def info(self):
         attr = dict()
         div = self.tree.xpath('//div[contains(@class, "details")]')[0]
-        elems = div.xpath('./a')
+        elems = div.xpath('./a//text()')
         # Date.
-        attr['date'] = datetime.strptime(elems[0].text, '%d/%m/%Y').date()
+        attr['date'] = datetime.strptime(elems[0], '%d/%m/%Y').date()
         # Competition.
-        attr['competition'] = elems[1].text
+        attr['competition'] = elems[1]
         # Kick-off time.
         elems = div.xpath('./span[text()="KO"]')
         if len(elems) > 0:
