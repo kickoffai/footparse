@@ -43,13 +43,16 @@ class MatchPage(SoccerwayPage):
 
     @property
     def swid(self):
-        elem = self.tree.xpath('//div[@data-match-id]')[0]
-        return int(elem.get("data-match-id"))
+        elem = self.tree.xpath('//link[@rel="canonical"]')[0]
+        match = re.match(r'.*/(?P<swid>\d+)/', elem.get("href"))
+        return int(match.group('swid'))
 
     @property
     def competition_swid(self):
-        elem = self.tree.xpath('//div[@data-competitionids]')[0]
-        return int(elem.get("data-competitionids"))
+        elem = self.tree.xpath('//ul[@class="left-tree"]'
+                '/li[contains(@class, "expanded")]/a')[0]
+        match = re.match(r'.*/c(?P<swid>\d+)/', elem.get("href"))
+        return int(match.group('swid'))
 
     @property
     def info(self):
@@ -64,6 +67,10 @@ class MatchPage(SoccerwayPage):
         elems = div.xpath('./span[text()="KO"]')
         if len(elems) > 0:
             span = elems[0].getnext().getchildren()[0]
+            attr["timestamp"] = int(span.get('data-value'))
+        else:
+            # Back to the "details" div.
+            span = div.xpath('//span[@class="timestamp"]')[0]
             attr["timestamp"] = int(span.get('data-value'))
         # Venue.
         elems = div.xpath('./span[text()="Venue"]')
@@ -121,7 +128,7 @@ class MatchPage(SoccerwayPage):
         attr = dict()
         # Shirt number.
         elems = tr.xpath('./td[@class="shirtnumber"]')
-        if len(elems) > 0 and elems[0].text is not None:
+        if len(elems) > 0 and elems[0].text is not None and elems[0].text != " ":
             attr['shirt_number'] = int(elems[0].text)
         # Display name and Soccerway ID.
         elems = tr.xpath('./td[contains(@class,"player")]//a')
@@ -265,8 +272,9 @@ class TeamPage(SoccerwayPage):
 
     @property
     def swid(self):
-        elem = self.tree.xpath('//div[@data-teamids]')[0]
-        return int(elem.get("data-teamids"))
+        elem = self.tree.xpath('//link[@rel="canonical"]')[0]
+        match = re.match(r'.*/(?P<swid>\d+)/', elem.get("href"))
+        return int(match.group('swid'))
 
     @property
     def country(self):
@@ -425,6 +433,8 @@ class MatchesBlock(BasePage):
             # Get the Soccerway ID.
             elem = tr.xpath('./td[contains(@class, "score-time")]/a')[0]
             match = re.match(r'.*/(?P<swid>\d+)/', elem.get("href"))
+            if match is None:
+                continue
             match_info['swid'] = int(match.group('swid'))
             # Try to get the score.
             elems = tr.xpath('./td//span[@class="extra_time_score"]')

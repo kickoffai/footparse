@@ -1,9 +1,9 @@
 import requests
 
 
-USER_AGENT = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) '
-    'AppleWebKit/537.36 (KHTML, like Gecko) '
-    'Chrome/39.0.2171.95 Safari/537.36')
+USER_AGENT = ("Mozilla/5.0 (iPhone14,3; U; CPU iPhone OS 15_0 like Mac OS X) "
+    "AppleWebKit/602.1.50 (KHTML, like Gecko) "
+    "Version/10.0 Mobile/19A346 Safari/602.1")
 
 
 class BasePage:
